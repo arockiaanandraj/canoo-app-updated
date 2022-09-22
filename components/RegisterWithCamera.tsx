@@ -16,8 +16,8 @@ const { width, height } = Dimensions.get("screen");
 
 export default function RegisterWithCamera({ stateChanger, ...props }) {
   const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
-  const [isFrontCaptured, setIsFrontCaptured] = useState<boolean>();
-  const [isBackCaptured, setIsBackCaptured] = useState<boolean>();
+  const [isFrontCaptured, setIsFrontCaptured] = useState<boolean>(false);
+  const [isBackCaptured, setIsBackCaptured] = useState<boolean>(false);
   const [ocrResultFront, setOcrResultFront] = useState<string>();
   const [ocrResultBack, setOcrResultBack] = useState<string>();
 
