@@ -16,8 +16,8 @@ const { width, height } = Dimensions.get("screen");
 
 export default function RegisterWithCamera({ stateChanger, ...props }) {
   const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
-  const [isFrontCaptured, setIsFrontCaptured] = useState<boolean>(false);
-  const [isBackCaptured, setIsBackCaptured] = useState<boolean>(false);
+  const [isFrontCaptured, setIsFrontCaptured] = useState<boolean>();
+  const [isBackCaptured, setIsBackCaptured] = useState<boolean>();
   const [ocrResultFront, setOcrResultFront] = useState<string>();
   const [ocrResultBack, setOcrResultBack] = useState<string>();
 
@@ -30,7 +30,7 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
     minMatchCharLength: 2,
     // location: 0,
     threshold: 0.6,
-    // distance: 100,
+    distance: 25,
     useExtendedSearch: true,
     // ignoreLocation: false,
     // ignoreFieldNorm: false,
@@ -43,14 +43,47 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
     console.log(page);
     let listOfLines: string[] = getAllLinesFromOcrTxt(mlkitOcrResult);
     console.log(listOfLines.join(" | "));
+
+    // Fuzzy Search
+    // Hardcoded pattern values, but should be captured manually from the user on a new screen before navigating to this page
+    let matchingResult;
     const fuse = new Fuse(listOfLines, fuzzySearchOptions);
-    const pattern = "LATIKA | YASMIN";
-    console.log(fuse.search(pattern));
+    const namePattern = "NOM LATIKA | YASMIN";
+    matchingResult = fuse.search(namePattern);
+    console.log(matchingResult);
+    console.log(isMatchingScoreWithinThreshold(matchingResult));
+    const idPattern = "ID No 0018 | 5978";
+    matchingResult = fuse.search(idPattern);
+    console.log(matchingResult);
+    console.log(isMatchingScoreWithinThreshold(matchingResult));
+    const dobPattern = "Birth 18 MAY | MAI | 87";
+    matchingResult = fuse.search(dobPattern);
+    console.log(matchingResult);
+    console.log(isMatchingScoreWithinThreshold(matchingResult));
+    const expiryDtPattern = "Expiry 24 MAR | MARS | 14";
+    matchingResult = fuse.search(expiryDtPattern);
+    console.log(matchingResult);
+    console.log(isMatchingScoreWithinThreshold(matchingResult));
+
     if (page === "front") {
       setOcrResultFront(listOfLines.join(" "));
     } else {
       setOcrResultBack(listOfLines.join(" "));
     }
+  };
+
+  const isMatchingScoreWithinThreshold = (
+    fuseResult: Fuse.FuseResult<any>[]
+  ) => {
+    let matchingScore: number | undefined = 1;
+    let currentScore: number | undefined = 1;
+    fuseResult.forEach((result) => {
+      currentScore = result.score;
+      if (currentScore && matchingScore && currentScore < matchingScore) {
+        matchingScore = result.score;
+      }
+    });
+    return matchingScore < 0.6;
   };
 
   const getAllLinesFromOcrTxt = (ocrResult: MlkitOcrResult) => {
@@ -183,8 +216,11 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
                 <Text style={styles.ocrTxt}>{ocrResultBack}</Text>
               </View>
               <View style={styles.ocrTxtContainer}>
-                <TouchableOpacity style={styles.button} onPress={stateChanger}>
-                  <Text style={styles.buttonTxt}>Done</Text>
+                <TouchableOpacity
+                  style={styles.doneButton}
+                  onPress={stateChanger}
+                >
+                  <Text style={styles.doneButtonTxt}>Done</Text>
                 </TouchableOpacity>
               </View>
             </>
@@ -229,6 +265,17 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
+    width: 50,
+    alignSelf: "flex-end",
+    alignItems: "center",
+  },
+  buttonTxt: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "white",
+  },
+  doneButton: {
+    flex: 1,
     bottom: 100,
     width: 50,
     height: 40,
@@ -239,7 +286,7 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     alignItems: "center",
   },
-  buttonTxt: {
+  doneButtonTxt: {
     fontSize: 24,
     fontWeight: "bold",
     color: "black",
