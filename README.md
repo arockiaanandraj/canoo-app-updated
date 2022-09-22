@@ -1,6 +1,6 @@
 # Canoo App - Updated
 
-This is a React Native app which uses Tesseract OCR and Expo Camera modules.
+This is a React Native app which uses Mlkit OCR and Expo Camera modules.
 
 ## Setup and Run App on Expo Go
 
