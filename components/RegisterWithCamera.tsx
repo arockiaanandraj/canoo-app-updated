@@ -23,24 +23,25 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
     console.log("Pic URI -" + response.uri);
     const mlkitOcrResult = await MlkitOcr.detectFromUri(response.uri);
     console.log(page);
+    let listOfLines: string[] = getAllLinesFromOcrTxt(mlkitOcrResult);
+    console.log(listOfLines.join(" "));
     if (page === "front") {
-      setOcrResultFront(getAllLinesFromOcrTxt(mlkitOcrResult));
+      setOcrResultFront(listOfLines.join(" "));
     } else {
-      setOcrResultBack(getAllLinesFromOcrTxt(mlkitOcrResult));
+      setOcrResultBack(listOfLines.join(" "));
     }
   };
 
   const getAllLinesFromOcrTxt = (ocrResult: MlkitOcrResult) => {
-    let txtLines = "";
+    let listOfLines: string[] = [];
     if (ocrResult) {
       ocrResult?.forEach((block) => {
         block.lines.forEach((line) => {
-          txtLines += line.text + " ";
+          listOfLines.push(line.text);
         });
       });
     }
-    console.log(txtLines);
-    return txtLines;
+    return listOfLines;
   };
 
   const cameraRef = useRef<Camera>(null);
