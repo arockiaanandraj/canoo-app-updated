@@ -27,6 +27,8 @@ eas build -p ios --profile preview
 
 ### Fuzzy search results
 
+Logic and execution of [components/RegisterWithCamera.tsx](components/RegisterWithCamera.tsx)
+
 ```js
 
 // Fuse.js - Options
