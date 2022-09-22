@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
   Dimensions,
 } from "react-native";
 import { Camera } from "expo-camera";
@@ -14,29 +15,63 @@ const { width, height } = Dimensions.get("screen");
 
 export default function RegisterWithCamera({ stateChanger, ...props }) {
   const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
-
-  const [ocrResult, setOcrResult] = useState<MlkitOcrResult | undefined>();
-  const getOcrText = async (response: { uri: any }) => {
+  const [isFrontCaptured, setIsFrontCaptured] = useState<boolean>();
+  const [isBackCaptured, setIsBackCaptured] = useState<boolean>();
+  const [ocrResultFront, setOcrResultFront] = useState<
+    MlkitOcrResult | undefined
+  >();
+  const [ocrResultBack, setOcrResultBack] = useState<
+    MlkitOcrResult | undefined
+  >();
+  const getOcrText = async (response: { uri: any }, page: string) => {
     console.log("Pic URI -" + response.uri);
-    setOcrResult(await MlkitOcr.detectFromUri(response.uri));
+    const mlkitOcrResult = await MlkitOcr.detectFromUri(response.uri);
+    console.log(page);
+    console.log(getAllLinesFromOcrTxt(mlkitOcrResult));
+    if (page === "front") {
+      setOcrResultFront(mlkitOcrResult);
+    } else {
+      setOcrResultBack(mlkitOcrResult);
+    }
+  };
+
+  const getAllLinesFromOcrTxt = (ocrResult: MlkitOcrResult) => {
+    let txtLines = "";
+    if (ocrResult) {
+      ocrResult?.forEach((block) => {
+        block.lines.forEach((line) => {
+          txtLines += line.text + " ";
+        });
+      });
+    }
+    return txtLines;
   };
 
   const cameraRef = useRef<Camera>(null);
 
-  const takePicture = useCallback(async (): Promise<void> => {
-    console.log("Take picture!");
-    if (!isCameraReady) return;
+  const takePicture = useCallback(
+    async (page: string): Promise<void> => {
+      console.log("Take picture!");
+      if (!isCameraReady) return;
 
-    try {
-      if (cameraRef.current !== null) {
-        console.log("Taking picture!");
-        const result = await cameraRef.current.takePictureAsync();
-        await getOcrText(result);
+      try {
+        if (cameraRef.current !== null) {
+          console.log("Taking picture!");
+          const result = await cameraRef.current.takePictureAsync();
+          if (page === "front") {
+            await getOcrText(result, "front");
+            setIsFrontCaptured(true);
+          } else {
+            await getOcrText(result, "back");
+            setIsBackCaptured(true);
+          }
+        }
+      } catch (error) {
+        console.log(error);
       }
-    } catch (error) {
-      console.log(error);
-    }
-  }, [isCameraReady]);
+    },
+    [isCameraReady]
+  );
 
   const [permission, requestPermission] = Camera.useCameraPermissions();
   useEffect(() => {
@@ -64,47 +99,101 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
     <>
       <>
         <View style={styles.container}>
-          {!ocrResult && (
-            <View style={styles.cameraContainer}>
-              <Camera
-                ref={cameraRef}
-                autoFocus="on"
-                style={styles.camera}
-                type="back"
-                onCameraReady={() => setIsCameraReady(true)}
-              >
-                <View style={styles.buttonContainer}>
-                  <TouchableOpacity style={styles.button} onPress={takePicture}>
-                    <Text style={styles.buttonTxt}>Scan</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.button}
-                    onPress={stateChanger}
-                  >
-                    <Text style={styles.buttonTxt}>Cancel</Text>
-                  </TouchableOpacity>
+          {(!ocrResultFront || !ocrResultBack) && (
+            <>
+              <View style={styles.cameraContainer}>
+                <View style={styles.topItemsContainer}>
+                  {!isFrontCaptured && (
+                    <Image
+                      style={styles.topImg}
+                      source={require("../assets/images/PR_Card_Front_Selected.png")}
+                    />
+                  )}
+                  {!isFrontCaptured && !isBackCaptured && (
+                    <Image
+                      style={styles.topImg}
+                      source={require("../assets/images/PR_Card_Back_Default.png")}
+                    />
+                  )}
+                  {isFrontCaptured && (
+                    <Image
+                      style={styles.topImg}
+                      source={require("../assets/images/PR_Card_Front_Done.png")}
+                    />
+                  )}
+                  {isFrontCaptured && !isBackCaptured && (
+                    <Image
+                      style={styles.topImg}
+                      source={require("../assets/images/PR_Card_Back_Selected.png")}
+                    />
+                  )}
                 </View>
-              </Camera>
-            </View>
-          )}
-          {ocrResult?.map((block) => {
-            return block.lines.map((line) => {
-              return (
-                <View
-                  key={line.text}
-                  style={{
-                    flex: 1,
-                  }}
+                <Camera
+                  ref={cameraRef}
+                  autoFocus="on"
+                  style={styles.camera}
+                  type="back"
+                  onCameraReady={() => setIsCameraReady(true)}
+                ></Camera>
+              </View>
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={() =>
+                    !isFrontCaptured
+                      ? takePicture("front")
+                      : takePicture("back")
+                  }
                 >
-                  <Text style={styles.ocrTxt}>{line.text}</Text>
-                </View>
-              );
-            });
-          })}
-          {ocrResult && (
-            <TouchableOpacity style={styles.button} onPress={stateChanger}>
-              <Text style={styles.buttonTxt}>Done</Text>
-            </TouchableOpacity>
+                  <Text style={styles.buttonTxt}>Scan</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button} onPress={stateChanger}>
+                  <Text style={styles.buttonTxt}>Cancel</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
+          {}
+          {ocrResultFront && ocrResultBack && (
+            <>
+              <View style={styles.ocrTxtContainer}>
+                {ocrResultFront?.map((block) => {
+                  return block.lines.map((line) => {
+                    return (
+                      <View
+                        key={line.text}
+                        style={{
+                          flex: 1,
+                        }}
+                      >
+                        <Text style={styles.ocrTxt}>{line.text}</Text>
+                      </View>
+                    );
+                  });
+                })}
+              </View>
+              <View style={styles.ocrTxtContainer}>
+                {ocrResultBack?.map((block) => {
+                  return block.lines.map((line) => {
+                    return (
+                      <View
+                        key={line.text}
+                        style={{
+                          flex: 1,
+                        }}
+                      >
+                        <Text style={styles.ocrTxt}>{line.text}</Text>
+                      </View>
+                    );
+                  });
+                })}
+              </View>
+              <View style={styles.ocrTxtContainer}>
+                <TouchableOpacity style={styles.button} onPress={stateChanger}>
+                  <Text style={styles.buttonTxt}>Done</Text>
+                </TouchableOpacity>
+              </View>
+            </>
           )}
         </View>
       </>
@@ -117,6 +206,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  topItemsContainer: {
+    flex: 0.001,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  topImg: {
+    top: -100,
   },
   cameraContainer: {
     flex: 1,
@@ -133,10 +231,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     backgroundColor: "transparent",
-    margin: 64,
+    bottom: 64,
   },
   button: {
     flex: 1,
+    width: 50,
     alignSelf: "flex-end",
     alignItems: "center",
   },
@@ -145,9 +244,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
   },
+  ocrTxtContainer: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   ocrTxt: {
-    fontSize: 14,
-    fontWeight: "bold",
+    fontSize: 10,
+    fontWeight: "100",
     color: "white",
   },
 });
