@@ -7,9 +7,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  registerHomeContainer: {
+    backgroundColor: "#000",
+    alignItems: "center",
+    justifyContent: "center",
+  },
   splashImg: {
     width: 300,
     height: 400,
+  },
+  registerImg: {
+    bottom: 50,
+    width: 300,
+    height: 600,
   },
   txt: {
     color: "#fff",
@@ -32,7 +42,7 @@ const styles = StyleSheet.create({
   primaryBtnTxt: {
     color: "#000",
     fontSize: 20,
-    fontWeight: "bold"
+    fontWeight: "bold",
   },
   registerContainer: {
     flex: 1,
@@ -40,7 +50,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     justifyContent: "flex-start",
     padding: 20,
-  }
+  },
 });
 
 export default styles;
