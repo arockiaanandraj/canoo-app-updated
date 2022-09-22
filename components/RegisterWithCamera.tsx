@@ -17,21 +17,16 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
   const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
   const [isFrontCaptured, setIsFrontCaptured] = useState<boolean>();
   const [isBackCaptured, setIsBackCaptured] = useState<boolean>();
-  const [ocrResultFront, setOcrResultFront] = useState<
-    MlkitOcrResult | undefined
-  >();
-  const [ocrResultBack, setOcrResultBack] = useState<
-    MlkitOcrResult | undefined
-  >();
+  const [ocrResultFront, setOcrResultFront] = useState<String>();
+  const [ocrResultBack, setOcrResultBack] = useState<String>();
   const getOcrText = async (response: { uri: any }, page: string) => {
     console.log("Pic URI -" + response.uri);
     const mlkitOcrResult = await MlkitOcr.detectFromUri(response.uri);
     console.log(page);
-    console.log(getAllLinesFromOcrTxt(mlkitOcrResult));
     if (page === "front") {
-      setOcrResultFront(mlkitOcrResult);
+      setOcrResultFront(getAllLinesFromOcrTxt(mlkitOcrResult));
     } else {
-      setOcrResultBack(mlkitOcrResult);
+      setOcrResultBack(getAllLinesFromOcrTxt(mlkitOcrResult));
     }
   };
 
@@ -44,6 +39,7 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
         });
       });
     }
+    console.log(txtLines);
     return txtLines;
   };
 
@@ -157,36 +153,10 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
           {ocrResultFront && ocrResultBack && (
             <>
               <View style={styles.ocrTxtContainer}>
-                {ocrResultFront?.map((block) => {
-                  return block.lines.map((line) => {
-                    return (
-                      <View
-                        key={line.text}
-                        style={{
-                          flex: 1,
-                        }}
-                      >
-                        <Text style={styles.ocrTxt}>{line.text}</Text>
-                      </View>
-                    );
-                  });
-                })}
+                <Text style={styles.ocrTxt}>{ocrResultFront}</Text>
               </View>
               <View style={styles.ocrTxtContainer}>
-                {ocrResultBack?.map((block) => {
-                  return block.lines.map((line) => {
-                    return (
-                      <View
-                        key={line.text}
-                        style={{
-                          flex: 1,
-                        }}
-                      >
-                        <Text style={styles.ocrTxt}>{line.text}</Text>
-                      </View>
-                    );
-                  });
-                })}
+                <Text style={styles.ocrTxt}>{ocrResultBack}</Text>
               </View>
               <View style={styles.ocrTxtContainer}>
                 <TouchableOpacity style={styles.button} onPress={stateChanger}>
