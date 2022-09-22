@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "canoo-app-updated",
+    "slug": "canoo-app-updated",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/app-icon.png",
+    "scheme": "canoo-app-updated",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "backgroundColor": "#000000"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.arockiaanandraj.canooappupdated"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/app-adaptive-icon.png",
+        "backgroundColor": "#000000"
+      },
+      "package": "com.arockiaanandraj.canooappupdated"
+    },
+    "web": {
+      "favicon": "./assets/images/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "23fbaa35-5eac-4540-9fdd-bbaff402a346"
+      }
+    }
+  }
+}
