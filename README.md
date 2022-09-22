@@ -9,7 +9,14 @@ npm install
 npm run start
 ```
 
-## Build on Expo Server
+## Build App with Dev Client using Expo Server
+
+```sh
+eas build -p android --profile development
+eas build -p ios --profile development
+```
+
+## Release App using Expo Server
 
 ```sh
 eas build -p android --profile preview
