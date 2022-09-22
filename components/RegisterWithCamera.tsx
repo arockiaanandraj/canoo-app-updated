@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { Camera } from "expo-camera";
 import MlkitOcr, { MlkitOcrResult } from "react-native-mlkit-ocr";
-import Fuse from 'fuse.js'
+import Fuse from "fuse.js";
 
 const { width, height } = Dimensions.get("screen");
 
@@ -174,9 +174,11 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
           {}
           {ocrResultFront && ocrResultBack && (
             <>
+              <Text style={styles.titleTxt}>Front - OCR Text</Text>
               <View style={styles.ocrTxtContainer}>
                 <Text style={styles.ocrTxt}>{ocrResultFront}</Text>
               </View>
+              <Text style={styles.titleTxt}>Back - OCR Text</Text>
               <View style={styles.ocrTxtContainer}>
                 <Text style={styles.ocrTxt}>{ocrResultBack}</Text>
               </View>
@@ -227,14 +229,20 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
+    bottom: 100,
     width: 50,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: "yellow",
+    marginLeft: 150,
+    marginRight: 150,
     alignSelf: "flex-end",
     alignItems: "center",
   },
   buttonTxt: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "white",
+    color: "black",
   },
   ocrTxtContainer: {
     flex: 1,
@@ -243,7 +251,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   ocrTxt: {
-    fontSize: 10,
+    fontSize: 12,
+    fontWeight: "100",
+    color: "white",
+  },
+  titleTxt: {
+    fontSize: 16,
     fontWeight: "100",
     color: "white",
   },
