@@ -17,8 +17,8 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
   const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
   const [isFrontCaptured, setIsFrontCaptured] = useState<boolean>();
   const [isBackCaptured, setIsBackCaptured] = useState<boolean>();
-  const [ocrResultFront, setOcrResultFront] = useState<String>();
-  const [ocrResultBack, setOcrResultBack] = useState<String>();
+  const [ocrResultFront, setOcrResultFront] = useState<string>();
+  const [ocrResultBack, setOcrResultBack] = useState<string>();
   const getOcrText = async (response: { uri: any }, page: string) => {
     console.log("Pic URI -" + response.uri);
     const mlkitOcrResult = await MlkitOcr.detectFromUri(response.uri);
