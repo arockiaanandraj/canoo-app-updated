@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { Camera } from "expo-camera";
 import MlkitOcr, { MlkitOcrResult } from "react-native-mlkit-ocr";
+import Fuse from 'fuse.js'
 
 const { width, height } = Dimensions.get("screen");
 
@@ -19,12 +20,32 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
   const [isBackCaptured, setIsBackCaptured] = useState<boolean>();
   const [ocrResultFront, setOcrResultFront] = useState<string>();
   const [ocrResultBack, setOcrResultBack] = useState<string>();
+
+  const fuzzySearchOptions = {
+    // isCaseSensitive: false,
+    includeScore: true,
+    // shouldSort: true,
+    // includeMatches: false,
+    // findAllMatches: false,
+    minMatchCharLength: 2,
+    // location: 0,
+    threshold: 0.6,
+    // distance: 100,
+    useExtendedSearch: true,
+    // ignoreLocation: false,
+    // ignoreFieldNorm: false,
+    // fieldNormWeight: 1,
+  };
+
   const getOcrText = async (response: { uri: any }, page: string) => {
     console.log("Pic URI -" + response.uri);
     const mlkitOcrResult = await MlkitOcr.detectFromUri(response.uri);
     console.log(page);
     let listOfLines: string[] = getAllLinesFromOcrTxt(mlkitOcrResult);
-    console.log(listOfLines.join(" "));
+    console.log(listOfLines.join(" | "));
+    const fuse = new Fuse(listOfLines, fuzzySearchOptions);
+    const pattern = "LATIKA | YASMIN";
+    console.log(fuse.search(pattern));
     if (page === "front") {
       setOcrResultFront(listOfLines.join(" "));
     } else {
