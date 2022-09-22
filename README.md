@@ -27,8 +27,17 @@ eas build -p ios --profile preview
 
 ### Fuzzy search results
 
-Logic and execution of [components/RegisterWithCamera.tsx](components/RegisterWithCamera.tsx)
+**Log Snippet showing the full OCR text of the front page scan**
 
+```log
+Take picture!
+Taking picture!
+Pic URI -file:///data/user/0/com.arockiaanandraj.canooappupdated/cache/Camera/0ac869e9-eca9-4239-907b-a8d45d576bf3.jpg
+front
+Souvernement | u Canada | PERMANENT | RESIDENT CARD | Name/Nom | SPECIMEN | LATIKA YASMIN | ID No/No ID | 0018-5978 | Sex | Nationality/ | Sexe | Nationalité | F | IND | Date of Birth/ | Date de naissance | Can | 18 MAY MAI 87 | Expiry/Expiration | 24 MAR /MARS 14
+```
+
+**Logic and execution of [components/RegisterWithCamera.tsx](components/RegisterWithCamera.tsx)**
 ```js
 
 // Fuse.js - Options
