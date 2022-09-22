@@ -17,7 +17,7 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
 
   const [ocrResult, setOcrResult] = useState<MlkitOcrResult | undefined>();
   const getOcrText = async (response: { uri: any }) => {
-    console.log("Pic URI -"+response.uri);
+    console.log("Pic URI -" + response.uri);
     setOcrResult(await MlkitOcr.detectFromUri(response.uri));
   };
 
@@ -65,22 +65,27 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
       <>
         <View style={styles.container}>
           {!ocrResult && (
-            <Camera
-              ref={cameraRef}
-              autoFocus={true}
-              style={styles.camera}
-              type="back"
-              onCameraReady={() => setIsCameraReady(true)}
-            >
-              <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={takePicture}>
-                  <Text style={styles.txt}>Scan</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={stateChanger}>
-                  <Text style={styles.txt}>Cancel</Text>
-                </TouchableOpacity>
-              </View>
-            </Camera>
+            <View style={styles.cameraContainer}>
+              <Camera
+                ref={cameraRef}
+                autoFocus="on"
+                style={styles.camera}
+                type="back"
+                onCameraReady={() => setIsCameraReady(true)}
+              >
+                <View style={styles.buttonContainer}>
+                  <TouchableOpacity style={styles.button} onPress={takePicture}>
+                    <Text style={styles.buttonTxt}>Scan</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.button}
+                    onPress={stateChanger}
+                  >
+                    <Text style={styles.buttonTxt}>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              </Camera>
+            </View>
           )}
           {ocrResult?.map((block) => {
             return block.lines.map((line) => {
@@ -88,15 +93,19 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
                 <View
                   key={line.text}
                   style={{
-                    backgroundColor: "#ccccccaf",
-                    position: "absolute",
+                    flex: 1,
                   }}
                 >
-                  <Text style={{ fontSize: 10 }}>{line.text}</Text>
+                  <Text style={styles.ocrTxt}>{line.text}</Text>
                 </View>
               );
             });
           })}
+          {ocrResult && (
+            <TouchableOpacity style={styles.button} onPress={stateChanger}>
+              <Text style={styles.buttonTxt}>Done</Text>
+            </TouchableOpacity>
+          )}
         </View>
       </>
     </>
@@ -106,11 +115,17 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: "center",
     justifyContent: "center",
+  },
+  cameraContainer: {
+    flex: 1,
+    position: "absolute",
+    width: width,
+    height: height / 2,
   },
   camera: {
     flex: 1,
-    alignSelf: "stretch",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -125,8 +140,13 @@ const styles = StyleSheet.create({
     alignSelf: "flex-end",
     alignItems: "center",
   },
-  txt: {
+  buttonTxt: {
     fontSize: 24,
+    fontWeight: "bold",
+    color: "white",
+  },
+  ocrTxt: {
+    fontSize: 14,
     fontWeight: "bold",
     color: "white",
   },
