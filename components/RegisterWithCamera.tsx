@@ -15,11 +15,30 @@ import Fuse from "fuse.js";
 const { width, height } = Dimensions.get("screen");
 
 export default function RegisterWithCamera({ stateChanger, ...props }) {
+  const {
+    familyName,
+    givenName,
+    idNumberStr,
+    dateOfBirth,
+    expiryDate,
+    prSinceDate,
+  } = props;
   const [isCameraReady, setIsCameraReady] = useState<boolean>(false);
   const [isFrontCaptured, setIsFrontCaptured] = useState<boolean>();
   const [isBackCaptured, setIsBackCaptured] = useState<boolean>();
   const [ocrResultFront, setOcrResultFront] = useState<string>();
   const [ocrResultBack, setOcrResultBack] = useState<string>();
+  const [isFamilyNameMatched, setIsFamilyNameMatched] =
+    useState<boolean>(false);
+  const [isGivenNameMatched, setIsGivenNameMatched] = useState<boolean>(false);
+  const [isIdNumberStrMatched, setIsIdNumberStrMatched] =
+    useState<boolean>(false);
+  const [isDateOfBirthMatched, setIsDateOfBirthMatched] =
+    useState<boolean>(false);
+  const [isExpiryDateMatched, setIsExpiryDateMatched] =
+    useState<boolean>(false);
+  const [isPrSinceDateMatched, setIsPrSinceDateMatched] =
+    useState<boolean>(false);
 
   const fuzzySearchOptions = {
     // isCaseSensitive: false,
@@ -45,29 +64,60 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
     console.log(listOfLines.join(" | "));
 
     // Fuzzy Search
-    // Hardcoded pattern values, but should be captured manually from the user on a new screen before navigating to this page
+    // Hardcoded date pattern values, but should be captured and transformed manually on UserDetailsInputForm before navigating to this page
     let matchingResult;
     const fuse = new Fuse(listOfLines, fuzzySearchOptions);
-    const namePattern = "NOM LATIKA | YASMIN";
-    matchingResult = fuse.search(namePattern);
-    console.log(matchingResult);
-    console.log(isMatchingScoreWithinThreshold(matchingResult));
-    const idPattern = "ID No 0018 | 5978";
-    matchingResult = fuse.search(idPattern);
-    console.log(matchingResult);
-    console.log(isMatchingScoreWithinThreshold(matchingResult));
-    const dobPattern = "Birth 18 MAY | MAI | 87";
-    matchingResult = fuse.search(dobPattern);
-    console.log(matchingResult);
-    console.log(isMatchingScoreWithinThreshold(matchingResult));
-    const expiryDtPattern = "Expiry 24 MAR | MARS | 14";
-    matchingResult = fuse.search(expiryDtPattern);
-    console.log(matchingResult);
-    console.log(isMatchingScoreWithinThreshold(matchingResult));
+    let isMatching;
 
     if (page === "front") {
+      const familyNamePattern = familyName;
+      console.log(familyNamePattern);
+      matchingResult = fuse.search(familyNamePattern);
+      console.log(matchingResult);
+      isMatching = isMatchingScoreWithinThreshold(matchingResult);
+      console.log(isMatching);
+      setIsFamilyNameMatched(isMatching);
+
+      const givenNamePattern = givenName;
+      console.log(givenNamePattern);
+      matchingResult = fuse.search(givenNamePattern);
+      console.log(matchingResult);
+      isMatching = isMatchingScoreWithinThreshold(matchingResult);
+      console.log(isMatching);
+      setIsGivenNameMatched(isMatching);
+
+      const idPattern = idNumberStr;
+      console.log(idPattern);
+      matchingResult = fuse.search(idPattern);
+      console.log(matchingResult);
+      isMatching = isMatchingScoreWithinThreshold(matchingResult);
+      console.log(isMatching);
+      setIsIdNumberStrMatched(isMatching);
+
+      const dobPattern = "Birth 18 MAY | MAI | 87";
+      console.log(dobPattern);
+      matchingResult = fuse.search(dobPattern);
+      console.log(matchingResult);
+      isMatching = isMatchingScoreWithinThreshold(matchingResult);
+      console.log(isMatching);
+      setIsDateOfBirthMatched(isMatching);
+
+      const expiryDtPattern = "Expiry 24 MAR | MARS | 14";
+      console.log(expiryDtPattern);
+      matchingResult = fuse.search(expiryDtPattern);
+      console.log(matchingResult);
+      isMatching = isMatchingScoreWithinThreshold(matchingResult);
+      console.log(isMatching);
+      setIsExpiryDateMatched(isMatching);
       setOcrResultFront(listOfLines.join(" "));
     } else {
+      const prSinceDtPattern = "PR Since 20 MAY MAI 10";
+      console.log(prSinceDtPattern);
+      matchingResult = fuse.search(prSinceDtPattern);
+      console.log(matchingResult);
+      isMatching = isMatchingScoreWithinThreshold(matchingResult);
+      console.log(isMatching);
+      setIsPrSinceDateMatched(isMatching);
       setOcrResultBack(listOfLines.join(" "));
     }
   };
@@ -79,10 +129,15 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
     let currentScore: number | undefined = 1;
     fuseResult.forEach((result) => {
       currentScore = result.score;
-      if (currentScore && matchingScore && currentScore < matchingScore) {
+      if (
+        currentScore != undefined &&
+        matchingScore != undefined &&
+        currentScore < matchingScore
+      ) {
         matchingScore = result.score;
       }
     });
+    console.log(matchingScore);
     return matchingScore < 0.6;
   };
 
@@ -204,7 +259,6 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
               </View>
             </>
           )}
-          {}
           {ocrResultFront && ocrResultBack && (
             <>
               <Text style={styles.titleTxt}>Front - OCR Text</Text>
@@ -214,6 +268,63 @@ export default function RegisterWithCamera({ stateChanger, ...props }) {
               <Text style={styles.titleTxt}>Back - OCR Text</Text>
               <View style={styles.ocrTxtContainer}>
                 <Text style={styles.ocrTxt}>{ocrResultBack}</Text>
+              </View>
+              <Text style={styles.titleTxt}>Matching Results</Text>
+              <View style={styles.matchingResultsContainer}>
+                <Text
+                  style={
+                    isFamilyNameMatched
+                      ? styles.matchingTxt
+                      : styles.mismatchedTxt
+                  }
+                >
+                  Family Name = {familyName}
+                </Text>
+                <Text
+                  style={
+                    isGivenNameMatched
+                      ? styles.matchingTxt
+                      : styles.mismatchedTxt
+                  }
+                >
+                  Given Name = {givenName}
+                </Text>
+                <Text
+                  style={
+                    isIdNumberStrMatched
+                      ? styles.matchingTxt
+                      : styles.mismatchedTxt
+                  }
+                >
+                  ID No = {idNumberStr}
+                </Text>
+                <Text
+                  style={
+                    isDateOfBirthMatched
+                      ? styles.matchingTxt
+                      : styles.mismatchedTxt
+                  }
+                >
+                  Date of Birth = {dateOfBirth}
+                </Text>
+                <Text
+                  style={
+                    isExpiryDateMatched
+                      ? styles.matchingTxt
+                      : styles.mismatchedTxt
+                  }
+                >
+                  Expiry Date = {expiryDate}
+                </Text>
+                <Text
+                  style={
+                    isPrSinceDateMatched
+                      ? styles.matchingTxt
+                      : styles.mismatchedTxt
+                  }
+                >
+                  PR Since Date = {prSinceDate}
+                </Text>
               </View>
               <View style={styles.ocrTxtContainer}>
                 <TouchableOpacity
@@ -303,8 +414,23 @@ const styles = StyleSheet.create({
     color: "white",
   },
   titleTxt: {
-    fontSize: 16,
+    fontSize: 30,
     fontWeight: "100",
     color: "white",
+  },
+  matchingResultsContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  matchingTxt: {
+    fontSize: 16,
+    fontWeight: "100",
+    color: "lightgreen",
+  },
+  mismatchedTxt: {
+    fontSize: 16,
+    fontWeight: "100",
+    color: "red",
   },
 });

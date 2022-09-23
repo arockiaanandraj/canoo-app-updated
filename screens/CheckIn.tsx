@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Text, View, Image, TouchableOpacity } from "react-native";
 import styles from "../Styles";
-import RegisterWithCamera from "../components/RegisterWithCamera";
 import UserDetailsInputForm from "../components/UserDetailsInputForm";
 
 export default function CheckIn() {
@@ -44,7 +43,7 @@ export default function CheckIn() {
       )}
       {appIsReady && !userIsRegistered && registerWithCameraActive && (
         <>
-          <UserDetailsInputForm stateChanger={onPressRegister}/>
+          <UserDetailsInputForm stateChanger={onPressRegister} showCamera={false}/>
           {/* <RegisterWithCamera stateChanger={onPressRegister} /> */}
         </>
       )}
