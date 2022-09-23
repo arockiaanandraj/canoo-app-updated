@@ -23,6 +23,10 @@ eas build -p android --profile preview
 eas build -p ios --profile preview
 ```
 
+## App Demo
+
+https://www.youtube.com/shorts/EVpGMSQVOnQ
+
 ## Latest Release Build - Installable unsigned APK and iOS app
 
 🤖 Open this link on your Android devices to install the app:
