@@ -23,6 +23,14 @@ eas build -p android --profile preview
 eas build -p ios --profile preview
 ```
 
+## Latest Release Build - Installable unsigned APK and iOS app
+
+🤖 Open this link on your Android devices to install the app:
+https://expo.dev/accounts/arockiaanandraj/projects/canoo-app-updated/builds/e27d037c-e3d9-43bb-8ba5-a69d3eb67125
+
+🍎 iOS app for Simulator:
+https://expo.dev/artifacts/eas/q4pABYAWWNU7QDmhGwTJc6.tar.gz
+
 ## Sample Test Results using Specimen PR Card
 
 ### Fuzzy search results
